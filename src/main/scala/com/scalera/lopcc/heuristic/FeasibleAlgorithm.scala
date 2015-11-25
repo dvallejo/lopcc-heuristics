@@ -7,7 +7,7 @@ import scala.util.Random
 
 object FeasibleAlgorithm extends Algorithm{
 
-  def generateSolution(graph: Graph): Solution = {
+  def execute(graph: Graph): Solution = {
     val sol = Solution.empty(graph.maxNumNodes)
     generateSolutionRec(graph, sol)
   }

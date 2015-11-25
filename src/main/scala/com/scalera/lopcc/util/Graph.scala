@@ -40,4 +40,11 @@ object Graph {
       matrix = List.fill(size)(List.fill(size)(0)),
       nodes = (0 to size-1).toList
     )
+
+  def dummy: Graph =
+    Graph(
+      maxNumNodes = 3,
+      matrix = List(List(1, 2, 5), List(9, 7, 3), List(4, 8, 6)),
+      nodes = (0 to 2).toList
+    )
 }

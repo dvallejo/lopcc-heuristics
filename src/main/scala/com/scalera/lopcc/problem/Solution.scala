@@ -6,7 +6,7 @@ case class Solution(
   alphas: List[Double],
   nodes: List[Int],
   maxNodes: Int,
-  totalCost: Double = 0.0
+  totalCost: Double = Double.MaxValue
 ) {
 
   def getAlpha(i: Int): Double = alphas(i)
@@ -26,14 +26,16 @@ case class Solution(
       totalCost = getCost
     )
 
-  def removeNode(node: Int, graph: Graph): Solution =
+  def removeNode(node: Int): Solution =
     this.copy(
       alphas = resetAlpha(node)
     ).copy(
       nodes = nodes.filter(_ != node)
     ).copy(
       totalCost = getCost
-    )  
+    )
+
+  def removeLast: (Solution, Int) = (removeNode(nodes.last), nodes.last)
 
   def calculateAlpha(node: Int, graph: Graph): Solution =
     this.copy(
