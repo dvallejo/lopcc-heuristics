@@ -5,7 +5,7 @@ import com.scalera.lopcc.problem.{ Solution, Bounds }
 
 import scala.collection.mutable.PriorityQueue
 
-object BranchAndBoundAlgorithm extends Algorithm with Bounds {
+object BranchAndBoundAlgorithm extends Algorithm with Bounds with Childrens {
 
   def execute(graph: Graph): Solution = {
     val initBound = getInitBound(graph)
@@ -15,45 +15,28 @@ object BranchAndBoundAlgorithm extends Algorithm with Bounds {
   def branchAndBound(graph: Graph, bound: Double): Solution = {
     
     var sol = Solution.empty(graph.maxNumNodes)
-    // val queue = PriorityQueue.empty[QueueNode]
-    // val childrens = Childrens(List.empty[QueueNode])
-    
-    // var partialGraph: Graph = graph
-    // var partialSol: Solution = sol
-    // var boundAux: Double = getLB1(partialGraph, partialSol)
-    // var queueNode: QueueNode = QueueNode(partialGraph, partialSol, boundAux)
+    val queue = PriorityQueue.empty[QueueNode]
+    var upperBound = bound
 
-    // queue.enqueue(queueNode)
+    val firstNode = QueueNode(graph, sol, getLB1(graph, sol))
+    queue.enqueue(firstNode)
 
-    // while(!queue.isEmpty) {
-      
-    //   queueNode = queue.dequeue
-    //   partialGraph = queueNode.graph
-    //   partialSol = queueNode.sol
-    //   boundAux = queueNode.bound
+    while(!queue.isEmpty) {
 
-    //   if (partialSol.isComplete) {
-    //     if (partialSol.isBetter(sol)) {
-    //       sol = partialSol
-    //       boundAux = sol.getCost
-    //     }
+      queue.dequeue() match {
+        case QueueNode(nodeGraph, nodeSol, nodeBound) =>
 
-    //   } else if(boundAux <= cotaSuperior){  //Podo          
-    //       hijos.compleccionesFactibles(partialSol, grafoParcial)
-    //       while(childrens.isEmpty()){
-    //         nodoCola = hijos.dameHijo()
-    //         nodoCola.getNodo().copiar(partialSol)
-    //         nodoCola.getGrafo().copiar(grafoParcial)
-    //         cotaAux = nodoCola.getCotaSolucion()
-    //         if(cotaAux <= cotaSuperior){ //Podo
-    //           nodoCola = new NodoColaPrioridad(partialSol, cotaAux, grafoParcial)
-    //           cola.add(nodoCola)
-    //         }else{
-    //           nodosPodados = nodosPodados + calcularNodosPodados(partialSol)
-    //         }
-    //       }
-    //   } else nodosPodados = nodosPodados + calcularNodosPodados(partialSol)
-    // }
+        if (nodeSol.isComplete) {
+          if (nodeSol.isBetter(sol)) {
+            sol = nodeSol
+            upperBound = sol.totalCost
+          }
+        } else if (nodeBound <= upperBound)     
+          feasibleChildrens(nodeSol, nodeGraph)
+            .filter(_.bound <= upperBound)
+            .foreach( children => queue.enqueue(children))
+      }
+    }
 
     sol
 

@@ -44,7 +44,7 @@ object Graph {
   def dummy: Graph =
     Graph(
       maxNumNodes = 3,
-      matrix = List(List(1, 2, 5), List(9, 7, 3), List(4, 8, 6)),
+      matrix = List(List(1, 10, 2), List(5, 7, 16), List(3, 5, 8)),
       nodes = (0 to 2).toList
     )
 }

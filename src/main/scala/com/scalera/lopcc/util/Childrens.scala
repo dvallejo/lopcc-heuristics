@@ -2,25 +2,16 @@ package com.scalera.lopcc.util
 
 import com.scalera.lopcc.problem.{ Solution, Bounds }
 
-case class Childrens(childrens: List[QueueNode]) extends Bounds {
+trait Childrens extends Bounds {
 
-  def getChildren: QueueNode = childrens.last
+  def feasibleChildrens(sol: Solution, graph: Graph): List[QueueNode] =
 
-  def isEmpty: Boolean = childrens.isEmpty
+    graph.nodes.foldLeft(List.empty[QueueNode]) {
+      case (childrens, node) =>
+        val newGraph = graph.removeNode(node)
+        val newSol = sol.insertNode(node, graph)
 
-  def feasibleChildrens(partialSol: Solution, graph: Graph): Childrens = {
-
-    val newChildrens = 
-      partialSol.nodes.foldLeft(List.empty[QueueNode]) {
-        case (childrens, node) =>
-          val newGraph = graph.removeNode(node)
-          val newSol = partialSol.insertNode(node, graph)
-
-          childrens :+ QueueNode(newGraph, newSol, getLB1(newGraph, newSol))
-      }
-
-    this.copy(childrens = newChildrens)
-
-  }
+        childrens :+ QueueNode(newGraph, newSol, getLB1(newGraph, newSol))
+    }
 
 }

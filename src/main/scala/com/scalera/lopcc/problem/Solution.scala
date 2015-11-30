@@ -19,21 +19,21 @@ case class Solution(
 
   def isBetter(sol: Solution): Boolean = totalCost < sol.totalCost
 
-  def insertNode(node: Int, graph: Graph): Solution =
-    calculateAlpha(node, graph).copy(
-      nodes = nodes :+ node
-    ).copy(
-      totalCost = getCost
-    )
+  def insertNode(node: Int, graph: Graph): Solution = {
+    val newSol = calculateAlpha(node, graph).copy(nodes = nodes :+ node)
+    newSol.copy(totalCost = newSol.getCost)
+  }
 
-  def removeNode(node: Int): Solution =
-    this.copy(
-      alphas = resetAlpha(node)
-    ).copy(
-      nodes = nodes.filter(_ != node)
-    ).copy(
-      totalCost = getCost
+  def removeNode(node: Int): Solution = {
+    val newSol = this.copy(
+                  alphas = resetAlpha(node)
+                ).copy(
+                  nodes = nodes.filter(_ != node)
+                )
+    newSol.copy(
+      totalCost = newSol.getCost
     )
+  }
 
   def removeLast: (Solution, Int) = (removeNode(nodes.last), nodes.last)
 

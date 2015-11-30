@@ -12,20 +12,18 @@ trait Bounds {
     getLB0(graph, sol) + getMinorOrderCost(graph, sol)
 
   private def getWeightsMissingNodes(graph: Graph, sol: Solution): Double =
-    sol.nodes.map(graph.getNodeCost).sum
+    graph.nodes.map(graph.getNodeCost).sum
 
   private def getSumEdges(graph: Graph, sol: Solution): Double =
     (for {
-      node1 <- sol.nodes
+      node1 <- graph.nodes
       node2 <- sol.nodes
-      if node1 != node2
     } yield graph.getEdgeCost(node1, node2) * sol.getAlpha(node2)).sum
 
-  private def getSumAlphas(sol: Solution): Double =
-    sol.nodes.map(sol.getAlpha).sum
+  private def getSumAlphas(sol: Solution): Double = sol.getCost
 
   private def getMinorOrderCost(graph: Graph, sol: Solution): Double = {
-    val betas = graph.nodes.map(getBeta(_, graph, sol))
+    val betas = (0 to graph.maxNumNodes - 1).map(getBeta(_, graph, sol))
     (for {
       node1 <- graph.nodes
       node2 <- graph.nodes
