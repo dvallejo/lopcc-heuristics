@@ -20,7 +20,7 @@ case class Solution(
   def isBetter(sol: Solution): Boolean = totalCost < sol.totalCost
 
   def insertNode(node: Int, graph: Graph): Solution = {
-    val newSol = calculateAlpha(node, graph).copy(nodes = nodes :+ node)
+    val newSol = calculateAlpha(node, graph).copy(nodes = node :: nodes)
     newSol.copy(totalCost = newSol.getCost)
   }
 
@@ -41,6 +41,8 @@ case class Solution(
     this.copy(
       alphas = setAlpha(node, graph)
     )
+
+  def prettyPrint = s"""$totalCost with this order: [${nodes.mkString(",")}]"""
 
   private def setAlpha(node: Int, graph: Graph): List[Double] = {
 

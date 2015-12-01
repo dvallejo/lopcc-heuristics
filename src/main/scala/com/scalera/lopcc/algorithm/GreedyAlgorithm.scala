@@ -1,4 +1,4 @@
-package com.scalera.lopcc.heuristic
+package com.scalera.lopcc.algorithm
 
 import com.scalera.lopcc.util.Graph
 import com.scalera.lopcc.problem.Solution

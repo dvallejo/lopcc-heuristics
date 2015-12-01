@@ -22,7 +22,7 @@ case class Graph(
 
   def insertNode(node: Int): Graph =
     this.copy(
-      nodes = nodes :+ node
+      nodes = node :: nodes
     )
 
   def removeNode(node: Int): Graph =

@@ -1,36 +1,64 @@
 package com.scalera.lopcc
 
 import parser.Parser
-import heuristic.FeasibleAlgorithm
-import heuristic.BacktrackingAlgorithm
-import heuristic.GreedyAlgorithm
-import heuristic.BranchAndBoundAlgorithm
+import algorithm._
+import problem.Solution
+import util.Graph
 
-object Main extends App with Parser {
+object Main extends Parser {
 
-  val filePath = "/RMarti/tipo00/mrho1.txt"
+  def main(args: Array[String]) {
 
-  val graph = com.scalera.lopcc.util.Graph.dummy
-  //val graph = processFile
+    args match {
+      case Array(algorithm, path) =>
+        processRequest(algorithm, Some(path))
+      
+      case Array(algorithm) =>
+        processRequest(algorithm, None)
+      
+      case _ => 
+        println("usage: program algorithm [path]")
+    }
 
-  // val feasibleSol =
-  //   FeasibleAlgorithm.execute(graph)
+  }
 
-  // println(s"\nFeasible: $feasibleSol\n")
+  private def processRequest(algorithm: String, path: Option[String]): Unit = {
 
-  // val bestSol =
-  //   BacktrackingAlgorithm.execute(graph)
+    val graph = parseGraph(path)
 
-  // println(s"\nBacktracking: $bestSol\n")
+    algorithm match {
 
-  // val bestGreedySol =
-  //   GreedyAlgorithm.execute(graph)
+      case "feasible" =>
+        executeAlgorithm(FeasibleAlgorithm, graph)
 
-  // println(s"\nGreedy: $bestGreedySol\n")
+      case "greedy" =>
+        executeAlgorithm(GreedyAlgorithm, graph)
 
-  val bestSolBAndB =
-    BranchAndBoundAlgorithm.execute(graph)
+      case "backtracking" =>
+        executeAlgorithm(BacktrackingAlgorithm, graph)
 
-  println(s"\nBranch And Bound: $bestSolBAndB\n")
+      case "branchAndBound" =>
+        executeAlgorithm(BranchAndBoundAlgorithm, graph)
+
+      case other =>
+        println(s"Algorithm $other not supported")
+    }
+  }
+
+  private def parseGraph(path: Option[String]): Graph = {
+    path.fold {
+      println("Graph dummy chosen")
+      Graph.dummy
+    } { pathFile =>
+      println(s"Graph from file: $pathFile")
+      processFile(pathFile)
+    }
+  }
+
+  private def executeAlgorithm(algorithm: Algorithm, graph: Graph): Unit = {
+    println(s"${algorithm.getClass.getSimpleName.init.toString} chosen")
+    val sol: Solution = algorithm.execute(graph)        
+    println(s"Solution: ${sol.prettyPrint}")
+  }
 
 }

@@ -6,14 +6,9 @@ import com.scalera.lopcc.util.Graph
 
 trait Parser {
 
-  val filePath: String
+  def processFile(filePath: String): Graph = {
 
-  def getFile: BufferedSource =
-    Source.fromFile(getClass.getResource(filePath).getFile)
-
-  def processFile: Graph = {
-
-    val lines: List[String] = getFile.getLines().toList
+    val lines: List[String] = getFile(filePath).getLines().toList
 
     val graph = Graph.empty(lines.size)
 
@@ -24,7 +19,10 @@ trait Parser {
       }
   }
 
-  def processLine(i: Int, line: String, graph: Graph): Graph = {
+  private def getFile(filePath: String): BufferedSource =
+    Source.fromFile(getClass.getResource(filePath).getFile)
+
+  private def processLine(i: Int, line: String, graph: Graph): Graph = {
     
     val costs: Seq[String] = line.split("\\s+")
     
