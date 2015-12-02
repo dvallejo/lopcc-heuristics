@@ -17,7 +17,7 @@ object Main extends Parser {
         processRequest(algorithm, None)
       
       case _ => 
-        println("usage: program algorithm [path]")
+        println("usage: run feasible|greedy|backtracking|branchAndBound [path]")
     }
 
   }
