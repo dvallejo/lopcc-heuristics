@@ -25,7 +25,16 @@ trait Algorithm {
     (graph.insertNode(node), newSol)
   }
 
+  def getInitSolution(graph: Graph): Solution =
+    GreedyAlgorithm.execute(graph)
+
   def getInitBound(graph: Graph): Double =
-    GreedyAlgorithm.execute(graph).totalCost
+    getInitSolution(graph).totalCost
+
+  def getRandomSolution(graph: Graph): Solution =
+    FeasibleAlgorithm.execute(graph)
+
+  def getRandomBound(graph: Graph): Double =
+    getRandomSolution(graph).totalCost
 
 }

@@ -2,6 +2,7 @@ package com.scalera.lopcc
 
 import parser.Parser
 import algorithm._
+import algorithm.ant.AntAlgorithm
 import problem.Solution
 import util.Graph
 
@@ -39,6 +40,9 @@ object Main extends Parser {
 
       case "branchAndBound" =>
         executeAlgorithm(BranchAndBoundAlgorithm, graph)
+
+      case "ant" =>
+        executeAlgorithm(AntAlgorithm, graph)
 
       case other =>
         println(s"Algorithm $other not supported")

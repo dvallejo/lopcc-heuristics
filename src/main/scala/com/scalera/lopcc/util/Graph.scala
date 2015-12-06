@@ -1,5 +1,7 @@
 package com.scalera.lopcc.util
 
+import scala.util.Random
+
 case class Graph(
   maxNumNodes: Int,
   matrix: List[List[Double]],
@@ -29,6 +31,8 @@ case class Graph(
     this.copy(
       nodes = nodes.filter(_ != node)
     )
+
+  def randomNode: Int = Random.nextInt(maxNumNodes)
 
 }
 
