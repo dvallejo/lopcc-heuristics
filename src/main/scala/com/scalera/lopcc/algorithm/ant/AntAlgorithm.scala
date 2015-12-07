@@ -9,9 +9,9 @@ object AntAlgorithm extends Algorithm {
   val alpha = 0.5
   val beta = 1.2
 
-  val pheromoneConstant = 1000.0
-  val evaporationRate = 0.2
-  val antsPerIteration = 10
+  val pheromoneConstant = 1
+  val evaporationRate = 0.3
+  val antsPerIteration = 40
   val iterations = 1000
 
   val colony =

@@ -21,7 +21,7 @@ object PheromoneGraph {
   def initial(size: Int): PheromoneGraph =
     PheromoneGraph(
       maxNumNodes = size,
-      (1 to size).map ( step =>
+      (0 to size-2).map ( step =>
         (
           step,
           (for {

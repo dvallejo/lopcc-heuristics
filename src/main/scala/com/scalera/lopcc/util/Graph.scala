@@ -34,6 +34,12 @@ case class Graph(
 
   def randomNode: Int = Random.nextInt(maxNumNodes)
 
+
+  def getMinEdgeCost(current: Int, node: Int): Double = {
+    val alphaNode = getNodeCost(node)
+    alphaNode + getNodeCost(current) + getEdgeCost(current, node)*alphaNode
+  }
+
 }
 
 object Graph {

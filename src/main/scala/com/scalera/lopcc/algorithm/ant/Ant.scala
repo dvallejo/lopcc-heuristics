@@ -13,7 +13,7 @@ case class Ant(alpha: Double = 0.5, beta: Double = 1.2) {
     val newGraph = graph.removeNode(initial)
     val sol = Solution.empty(graph.maxNumNodes).insertNode(initial, newGraph)
     
-    (1 to graph.maxNumNodes - 1).foldRight((newGraph, sol)) {
+    (0 to graph.maxNumNodes - 2).foldRight((newGraph, sol)) {
       case(level, (g, s)) =>
         val nextNode = nextStep(level, s.nodes.last, g, pheromoneGraph)
         val nextGraph = g.removeNode(nextNode)
@@ -36,18 +36,22 @@ case class Ant(alpha: Double = 0.5, beta: Double = 1.2) {
     pheromoneGraph: PheromoneGraph
   ): List[(Int, Double)] = {
     
-    val normalizationFactor = graph.nodes.map { node =>
-      val pheromone = pheromoneGraph.getCost(level)(current, node)
-      val benefit = getMinEdgeCost(graph, current, node)
-      Math.pow(pheromone, alpha) / Math.pow(benefit, beta)
-    }.sum
+    if(graph.nodes.forall(node => pheromoneGraph.getCost(level)(current, node) == 0))
+      graph.nodes.map(node => (node, 1.0 / graph.nodes.size))
+    else {
+      val normalizationFactor = graph.nodes.map { node =>
+        val pheromone = pheromoneGraph.getCost(level)(current, node)
+        val benefit = graph.getMinEdgeCost(current, node)
+        Math.pow(pheromone, alpha) / Math.pow(benefit, beta)
+      }.sum
 
-    graph.nodes.toList.map { node =>
-      val pheromone = pheromoneGraph.getCost(level)(current, node)
-      val benefit = getMinEdgeCost(graph, current, node)
-      val a = Math.pow(pheromone, alpha)
-      val b = 1.0 / Math.pow(benefit, beta)
-      (node, ((a * b) / normalizationFactor))
+      graph.nodes.toList.map { node =>
+        val pheromone = pheromoneGraph.getCost(level)(current, node)
+        val benefit = graph.getMinEdgeCost(current, node)
+        val a = Math.pow(pheromone, alpha)
+        val b = 1.0 / Math.pow(benefit, beta)
+        (node, ((a * b) / normalizationFactor))
+      }
     }
   }
 
@@ -56,11 +60,6 @@ case class Ant(alpha: Double = 0.5, beta: Double = 1.2) {
     val intervals = items.zip(weights.scanLeft(0.0)(_ + _).tail)
     val maxProbability: Double = Random.nextDouble() * weights.sum
     intervals.find{ case(_, weight) => weight >= maxProbability}.get._1
-  }
-
-  private def getMinEdgeCost(graph: Graph, current: Int, node: Int): Double = {
-    val alphaNode = graph.getNodeCost(node)
-    alphaNode + graph.getNodeCost(current) + graph.getEdgeCost(current, node)*alphaNode
   }
 
 }

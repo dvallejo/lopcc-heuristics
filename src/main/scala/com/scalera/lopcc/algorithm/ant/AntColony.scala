@@ -17,9 +17,10 @@ case class AntColony(
       bestSol: Solution,
       iteration: Int
     ): Solution =
-      if(iteration == iterations)
+      if(iteration == iterations) {
+        //println("Pheromone graph: " + pheromoneGraph.weights.map(k => (k._1, k._2.toList.sortBy(_._2).last)))
         bestSol
-      else {
+      }else {
         val newSolutions = goAntColony(graph, pheromoneGraph)
         
         var newPheromoneGraph = pheromoneGraph
@@ -72,9 +73,9 @@ case class AntColony(
     pheromoneGraph: PheromoneGraph): PheromoneGraph =
     (0 to solution.maxNodes-2).foldRight(pheromoneGraph) { 
       case (level, g) =>
-        val currentWeight = pheromoneGraph.getCost(level + 1)(solution.nodes(level), solution.nodes(level + 1))
-        val addition = pheromoneConstant / (solution.totalCost * currentWeight)
-        g.setCost(level + 1, solution.nodes(level), solution.nodes(level + 1), currentWeight + addition)
+        val pheromone = g.getCost(level)(solution.nodes(level), solution.nodes(level + 1))
+        val addition = pheromoneConstant / solution.getCost
+        g.setCost(level, solution.nodes(level), solution.nodes(level + 1), pheromone + addition)
     }
 
 }
