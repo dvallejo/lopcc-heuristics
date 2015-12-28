@@ -57,4 +57,11 @@ object Graph {
       matrix = List(List(1, 10, 2), List(5, 7, 16), List(3, 5, 8)),
       nodes = (0 to 2).toList
     )
+
+  def initial(size: Int, initialCost: Double = 1.0): Graph =
+    Graph(
+      maxNumNodes = size,
+      matrix = List.fill(size)(List.fill(size)(initialCost)),
+      nodes = (0 to size-1).toList
+    )
 }

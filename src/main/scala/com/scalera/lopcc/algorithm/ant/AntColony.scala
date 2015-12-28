@@ -13,12 +13,11 @@ case class AntColony(
   def solve(graph: Graph, initialSolution: Solution, iterations: Int): Solution = {
     
     def recursiveSol(
-      pheromoneGraph: PheromoneGraph,
+      pheromoneGraph: Graph,
       bestSol: Solution,
       iteration: Int
     ): Solution =
       if(iteration == iterations) {
-        //println("Pheromone graph: " + pheromoneGraph.weights.map(k => (k._1, k._2.toList.sortBy(_._2).last)))
         bestSol
       }else {
         val newSolutions = goAntColony(graph, pheromoneGraph)
@@ -35,6 +34,9 @@ case class AntColony(
           }
         }
 
+        //The best one deposites twice
+        newPheromoneGraph = depositPheromones(newBestSol, newPheromoneGraph)
+
         newPheromoneGraph = evaporatePheromones(newPheromoneGraph)
 
         recursiveSol(
@@ -49,33 +51,32 @@ case class AntColony(
     
   }
 
-  private def goAnt(graph: Graph, pheromoneGraph: PheromoneGraph): Solution =
+  private def goAnt(graph: Graph, pheromoneGraph: Graph): Solution =
     ant.goAnt(graph.randomNode, graph, pheromoneGraph)
 
-  private def goAntColony(graph: Graph, pheromoneGraph: PheromoneGraph): List[Solution] =
+  private def goAntColony(graph: Graph, pheromoneGraph: Graph): List[Solution] =
     (1 to antsPerIteration).toList.map(_ => goAnt(graph, pheromoneGraph))
 
-  private def initializePheromones(graph: Graph): PheromoneGraph =
-    PheromoneGraph.initial(graph.maxNumNodes)
+  private def initializePheromones(graph: Graph): Graph =
+    Graph.initial(graph.maxNumNodes)
 
-  private def evaporatePheromones(pheromoneGraph: PheromoneGraph): PheromoneGraph =
+  private def evaporatePheromones(pheromoneGraph: Graph): Graph =
     pheromoneGraph.copy(
-      weights = pheromoneGraph.weights.map {
-        case (level, weightLevel) => (level, weightLevel.map {
-          case ((from, to), pheromone) =>
-            ((from, to), (1.0 - evaporationRate) * pheromone)
-        })
+      matrix = pheromoneGraph.matrix.map { nodeCosts =>
+        nodeCosts.map { pheromone =>
+            (1.0 - evaporationRate) * pheromone
+        }
       }
     )
 
   private def depositPheromones(
     solution: Solution,
-    pheromoneGraph: PheromoneGraph): PheromoneGraph =
+    pheromoneGraph: Graph): Graph =
     (0 to solution.maxNodes-2).foldRight(pheromoneGraph) { 
       case (level, g) =>
-        val pheromone = g.getCost(level)(solution.nodes(level), solution.nodes(level + 1))
+        val pheromone = g.getEdgeCost(solution.nodes(level), solution.nodes(level + 1))
         val addition = pheromoneConstant / solution.getCost
-        g.setCost(level, solution.nodes(level), solution.nodes(level + 1), pheromone + addition)
+        g.setEdge(solution.nodes(level), solution.nodes(level + 1), pheromone + addition)
     }
 
 }
