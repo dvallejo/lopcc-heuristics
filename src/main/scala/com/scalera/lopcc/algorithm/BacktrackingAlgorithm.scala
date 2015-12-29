@@ -3,7 +3,7 @@ package com.scalera.lopcc.algorithm
 import com.scalera.lopcc.util.Graph
 import com.scalera.lopcc.problem.Solution
 
-object BacktrackingAlgorithm extends Algorithm{
+object BacktrackingAlgorithm extends Algorithm() {
 
   def execute(graph: Graph): Solution = {
     val sol = Solution.empty(graph.maxNumNodes)

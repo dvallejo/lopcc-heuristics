@@ -12,19 +12,22 @@ object Main extends Parser {
   def main(args: Array[String]) {
 
     args match {
+      case Array(algorithm, boundType, path) =>
+        processRequest(algorithm, Some(boundType), Some(path))
+
       case Array(algorithm, path) =>
-        processRequest(algorithm, Some(path))
-      
+        processRequest(algorithm, None, Some(path))
+
       case Array(algorithm) =>
-        processRequest(algorithm, None)
+        processRequest(algorithm, None, None)
       
       case _ => 
-        println("usage: run random|greedy|backtracking|branchAndBound|ant|genetic [path]")
+        println("usage: random|greedy|backtracking|branchAndBound|ant|genetic [boundType] [path]")
     }
 
   }
 
-  private def processRequest(algorithm: String, path: Option[String]): Unit = {
+  private def processRequest(algorithm: String, boundType: Option[String], path: Option[String]): Unit = {
 
     val graph = parseGraph(path)
 
@@ -40,7 +43,9 @@ object Main extends Parser {
         executeAlgorithm(BacktrackingAlgorithm, graph)
 
       case "branchAndBound" =>
-        executeAlgorithm(BranchAndBoundAlgorithm, graph)
+        val boundSelection = boundType.getOrElse("random")
+        println(s"Initial bound calculated by $boundSelection algorithm")
+        executeAlgorithm(BranchAndBoundAlgorithm(boundSelection), graph)
 
       case "ant" =>
         executeAlgorithm(AntAlgorithm, graph)

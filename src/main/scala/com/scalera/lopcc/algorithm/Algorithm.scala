@@ -2,8 +2,10 @@ package com.scalera.lopcc.algorithm
 
 import com.scalera.lopcc.problem.Solution
 import com.scalera.lopcc.util.Graph
+import com.scalera.lopcc.algorithm.genetic.GeneticAlgorithm
+import com.scalera.lopcc.algorithm.ant.AntAlgorithm
 
-trait Algorithm {
+abstract class Algorithm(initBoundSelection: String = "random") {
 
   def execute(graph: Graph): Solution
 
@@ -25,14 +27,32 @@ trait Algorithm {
     (graph.insertNode(node), newSol)
   }
 
-  def getInitSolution(graph: Graph): Solution =
-    GreedyAlgorithm.execute(graph)
-
   def getInitBound(graph: Graph): Double =
-    getInitSolution(graph).totalCost
+    initBoundSelection match {
+      case "random" => getRandomSolution(graph).totalCost
+      case "randomx100" => getRandomSolutionx100(graph).totalCost
+      case "ant" => getSolutionFromAnts(graph).totalCost
+      case "genetic" => getSolutionFromGA(graph).totalCost
+      case "greedy" => getGreedySolution(graph).totalCost
+      case _ => getRandomSolution(graph).totalCost
+    }
+
+  def getGreedySolution(graph: Graph): Solution =
+    GreedyAlgorithm.execute(graph)
 
   def getRandomSolution(graph: Graph): Solution =
     FeasibleAlgorithm.execute(graph)
+
+  def getRandomSolutionx100(graph: Graph): Solution =
+    (1 to 100).map( _ =>
+      FeasibleAlgorithm.execute(graph)
+    ).sortBy(_.totalCost).head
+
+  def getSolutionFromGA(graph: Graph): Solution =
+    GeneticAlgorithm.execute(graph)
+
+  def getSolutionFromAnts(graph: Graph): Solution =
+    AntAlgorithm.execute(graph)
 
   def getRandomBound(graph: Graph): Double =
     getRandomSolution(graph).totalCost

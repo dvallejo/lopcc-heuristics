@@ -7,7 +7,7 @@ import com.scalera.lopcc.algorithm.Algorithm
 object GeneticAlgorithm extends Algorithm {
 
   val populationSize = 1000
-  val iterations = 500
+  val iterations = 100
 
   def execute(graph: Graph): Solution = {
     

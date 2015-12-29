@@ -5,7 +5,7 @@ import com.scalera.lopcc.problem.Solution
 
 import scala.util.Random
 
-object FeasibleAlgorithm extends Algorithm{
+object FeasibleAlgorithm extends Algorithm() {
 
   def execute(graph: Graph): Solution = {
     val sol = Solution.empty(graph.maxNumNodes)

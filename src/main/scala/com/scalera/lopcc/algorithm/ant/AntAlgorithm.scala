@@ -4,7 +4,7 @@ import com.scalera.lopcc.problem.Solution
 import com.scalera.lopcc.util.Graph
 import com.scalera.lopcc.algorithm.Algorithm
 
-object AntAlgorithm extends Algorithm {
+object AntAlgorithm extends Algorithm() {
 
   val alpha = 0.5
   val beta = 1.2

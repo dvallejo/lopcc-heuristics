@@ -40,6 +40,18 @@ case class Graph(
     alphaNode + getNodeCost(current) + getEdgeCost(current, node)*alphaNode
   }
 
+  def getNodeMinEdgeCost: Int =
+    nodes.map { node =>
+      val nodeCost = getNodeCost(node)
+      val edgesCost = 
+        (0 to nodes.size - 1).filter(n => !nodes.contains(n)).map { n =>
+          getEdgeCost(node, n)
+        }.sum
+      
+      val totalCost = nodeCost + edgesCost
+      (node, totalCost)
+    }.sortBy(_._2).head._1
+
 }
 
 object Graph {

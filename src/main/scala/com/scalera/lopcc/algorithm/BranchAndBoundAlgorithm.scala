@@ -5,7 +5,8 @@ import com.scalera.lopcc.problem.{ Solution, Bounds }
 
 import scala.collection.mutable.PriorityQueue
 
-object BranchAndBoundAlgorithm extends Algorithm with Bounds with Childrens {
+case class BranchAndBoundAlgorithm(initBoundSelection: String) 
+  extends Algorithm(initBoundSelection) with Bounds with Childrens {
 
   def execute(graph: Graph): Solution = {
     val initBound = getInitBound(graph)
