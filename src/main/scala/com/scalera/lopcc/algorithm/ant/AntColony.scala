@@ -3,6 +3,13 @@ package com.scalera.lopcc.algorithm.ant
 import com.scalera.lopcc.problem.Solution
 import com.scalera.lopcc.util.Graph
 
+/**
+  * Colony of ants
+  * @param ant ant mode
+  * @param pheromoneConstant pheromone constant
+  * @param evaporationRate evaporation rate constant
+  * @param antsPerIteration ants per iteration constant
+  */
 case class AntColony(
   ant: Ant,
   pheromoneConstant: Double = 1000.0,
@@ -10,6 +17,13 @@ case class AntColony(
   antsPerIteration: Int = 20
 ) {
 
+  /**
+    * Execute the ACO algorithm
+    * @param graph Graph
+    * @param initialSolution initial solution
+    * @param iterations number of iterations
+    * @return the best solution found
+    */
   def solve(graph: Graph, initialSolution: Solution, iterations: Int): Solution = {
     
     def recursiveSol(
@@ -51,15 +65,37 @@ case class AntColony(
     
   }
 
+  /**
+    * Return the solution reached by an ant
+    * @param graph Graph
+    * @param pheromoneGraph graph with the pheromones
+    * @return the solution found
+    */
   private def goAnt(graph: Graph, pheromoneGraph: Graph): Solution =
     ant.goAnt(graph.randomNode, graph, pheromoneGraph)
 
+  /**
+    * Generate a new solution for each ant
+    * @param graph Graph
+    * @param pheromoneGraph graph with the pheromones
+    * @return the solution found
+    */
   private def goAntColony(graph: Graph, pheromoneGraph: Graph): List[Solution] =
     (1 to antsPerIteration).toList.map(_ => goAnt(graph, pheromoneGraph))
 
+  /**
+    * Generate an initial graph of pheromones
+    * @param graph Graph
+    * @return the graph generated
+    */
   private def initializePheromones(graph: Graph): Graph =
     Graph.initial(graph.maxNumNodes)
 
+  /**
+    * Evaporate pheromones according with the evaporation rate
+    * @param pheromoneGraph graph with the pheromones
+    * @return the new graph
+    */
   private def evaporatePheromones(pheromoneGraph: Graph): Graph =
     pheromoneGraph.copy(
       matrix = pheromoneGraph.matrix.map { nodeCosts =>
@@ -69,6 +105,12 @@ case class AntColony(
       }
     )
 
+  /**
+    * Deposite pheromones in the nodes of a solution
+    * @param solution Solution
+    * @param pheromoneGraph graph with the pheromones
+    * @return the new graph
+    */
   private def depositPheromones(
     solution: Solution,
     pheromoneGraph: Graph): Graph =
