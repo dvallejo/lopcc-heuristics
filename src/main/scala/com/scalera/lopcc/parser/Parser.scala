@@ -1,6 +1,7 @@
 package com.scalera.lopcc.parser
 
 import scala.io.{ Source, BufferedSource}
+import scala.util.Try
 
 import com.scalera.lopcc.util.Graph
 
@@ -20,7 +21,10 @@ trait Parser {
   }
 
   private def getFile(filePath: String): BufferedSource =
-    Source.fromFile(getClass.getResource(filePath).getFile)
+    Try(Source.fromFile(getClass.getResource(filePath).getFile))
+      .getOrElse(
+        Source.fromFile(filePath)
+      )
 
   private def processLine(i: Int, line: String, graph: Graph): Graph = {
     
