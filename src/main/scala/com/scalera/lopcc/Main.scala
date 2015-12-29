@@ -3,6 +3,7 @@ package com.scalera.lopcc
 import parser.Parser
 import algorithm._
 import algorithm.ant.AntAlgorithm
+import algorithm.genetic.GeneticAlgorithm
 import problem.Solution
 import util.Graph
 
@@ -18,7 +19,7 @@ object Main extends Parser {
         processRequest(algorithm, None)
       
       case _ => 
-        println("usage: run feasible|greedy|backtracking|branchAndBound [path]")
+        println("usage: run random|greedy|backtracking|branchAndBound|ant|genetic [path]")
     }
 
   }
@@ -29,7 +30,7 @@ object Main extends Parser {
 
     algorithm match {
 
-      case "feasible" =>
+      case "random" =>
         executeAlgorithm(FeasibleAlgorithm, graph)
 
       case "greedy" =>
@@ -43,6 +44,9 @@ object Main extends Parser {
 
       case "ant" =>
         executeAlgorithm(AntAlgorithm, graph)
+
+      case "genetic" =>
+        executeAlgorithm(GeneticAlgorithm, graph)
 
       case other =>
         println(s"Algorithm $other not supported")

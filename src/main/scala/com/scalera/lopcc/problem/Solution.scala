@@ -67,4 +67,12 @@ object Solution {
       nodes = List.empty[Int],
       maxNodes = size
     )
+
+  def getCost(graph: Graph, nodes: List[Int]): Double =
+    nodes.reverse.foldLeft((graph, Solution.empty(nodes.size))) {
+      case ((graph, sol), node) => 
+        val newGraph: Graph = graph.removeNode(node)
+        (newGraph, sol.insertNode(node, newGraph))
+    }._2.getCost
+
 }
