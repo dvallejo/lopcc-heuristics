@@ -6,8 +6,8 @@ import com.scalera.lopcc.algorithm.Algorithm
 
 object GeneticAlgorithm extends Algorithm {
 
-  val populationSize = 100
-  val iterations = 1000
+  val populationSize = 1000
+  val iterations = 500
 
   def execute(graph: Graph): Solution = {
     
@@ -20,8 +20,8 @@ object GeneticAlgorithm extends Algorithm {
 
     val sol = Solution.empty(graph.maxNumNodes)
 
-    finalPopulation.best.genes.foldLeft((graph, sol)) {
-      case ((acumGraph, acumSol), node) =>
+    finalPopulation.best.genes.foldRight((graph, sol)) {
+      case (node, (acumGraph, acumSol)) =>
         insertInSolution(node, acumSol, acumGraph)
     }._2
 

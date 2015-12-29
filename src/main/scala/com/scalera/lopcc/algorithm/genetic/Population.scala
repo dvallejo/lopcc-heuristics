@@ -3,10 +3,10 @@ package com.scalera.lopcc.algorithm.genetic
 import com.scalera.lopcc.util.Graph
 import com.scalera.lopcc.problem.Solution
 
-case class Population(chromosomes: List[Chromosome], graph: Graph) {
+case class Population(chromosomes: List[(Chromosome, Double)], graph: Graph) {
 
   def populationSize = chromosomes.size
-  def numGenes = chromosomes.head.genes.size
+  def numGenes = chromosomes.head._1.genes.size
 
   def evolve: Population = {
 
@@ -15,38 +15,37 @@ case class Population(chromosomes: List[Chromosome], graph: Graph) {
     val newGeneration: Population =
       Population.initial(populationSize, numGenes, graph)
 
-    val bestNewGeneration: List[Chromosome] =
-      getNBest(newGeneration.chromosomes, partition)
+    val bestNewGeneration: List[(Chromosome, Double)] =
+      newGeneration.chromosomes.take(partition)
 
-    val bestCurrentGeneration: List[Chromosome] =
-      getNBest(chromosomes, partition)
+    val bestCurrentGeneration: List[(Chromosome, Double)] =
+      chromosomes.take(partition)
 
-    val crossGenerations: List[Chromosome] =
+    val crossGenerations: List[(Chromosome, Double)] =
       bestCurrentGeneration.zip(bestNewGeneration).map {
-        case (c1, c2) =>
-          if(Solution.getCost(graph, c1.genes) < Solution.getCost(graph, c2.genes))
-            Chromosome.cross(c1, c2)
-          else
-            Chromosome.cross(c2, c1)
-      }
+        case ((ch1, cost1), (ch2, cost2)) =>
+          if(cost1 < cost2) {
+            val newChromosome = Chromosome.cross(ch1, ch2)
+            (newChromosome, Solution.getCost(graph, newChromosome.genes))
+          } else {
+            val newChromosome = Chromosome.cross(ch2, ch1)
+            (newChromosome, Solution.getCost(graph, newChromosome.genes))
+          }
+      }.sortBy(_._2)
 
-    val bestCrossGenerations: List[Chromosome] =
-      getNBest(crossGenerations, populationSize - partition * 2)
+    val bestCrossGenerations: List[(Chromosome, Double)] =
+      crossGenerations.take(populationSize - partition * 2)
+
+    val nextGeneration = (bestCurrentGeneration ::: bestNewGeneration ::: bestCrossGenerations)
 
     Population(
-      chromosomes = bestCurrentGeneration ::: bestNewGeneration ::: bestCrossGenerations,
+      chromosomes = nextGeneration.sortBy(_._2),
       graph = graph
     )
   }
 
-  def sortByCost(chromosomes: List[Chromosome]): List[Chromosome] = 
-    chromosomes.sortBy(ch => Solution.getCost(graph, ch.genes))
-
-  def getNBest(chromosomes: List[Chromosome], n: Int): List[Chromosome] =
-    sortByCost(chromosomes).takeRight(n)
-
   def best: Chromosome =
-    sortByCost(chromosomes).last
+    chromosomes.head._1
 
 }
 
@@ -54,7 +53,11 @@ object Population {
 
   def initial(populationSize: Int, numGenes: Int, graph: Graph): Population =
     Population(
-      (1 to populationSize).map(_ => Chromosome.generateRandom(numGenes)).toList,
+      (1 to populationSize)
+        .map(_ => Chromosome.generateRandom(numGenes))
+        .map(ch => (ch, Solution.getCost(graph, ch.genes)))
+        .toList
+        .sortBy(_._2),
       graph
     )
 

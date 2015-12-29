@@ -69,8 +69,8 @@ object Solution {
     )
 
   def getCost(graph: Graph, nodes: List[Int]): Double =
-    nodes.reverse.foldLeft((graph, Solution.empty(nodes.size))) {
-      case ((graph, sol), node) => 
+    nodes.foldRight((graph, Solution.empty(nodes.size))) {
+      case (node, (graph, sol)) => 
         val newGraph: Graph = graph.removeNode(node)
         (newGraph, sol.insertNode(node, newGraph))
     }._2.getCost
