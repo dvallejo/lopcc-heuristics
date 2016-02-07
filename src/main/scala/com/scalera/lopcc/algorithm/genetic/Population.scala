@@ -22,16 +22,14 @@ case class Population(chromosomes: List[(Chromosome, Double)], graph: Graph) {
     */
   def evolve: Population = {
 
-    val partition = populationSize / 3
-
     val newGeneration: Population =
       Population.initial(populationSize, numGenes, graph)
 
     val bestNewGeneration: List[(Chromosome, Double)] =
-      newGeneration.chromosomes.take(partition)
+      newGeneration.chromosomes.take(populationSize / 2)
 
     val bestCurrentGeneration: List[(Chromosome, Double)] =
-      chromosomes.take(partition)
+      chromosomes.take(populationSize / 2)
 
     val crossGenerations: List[(Chromosome, Double)] =
       bestCurrentGeneration.zip(bestNewGeneration).map {
@@ -46,9 +44,9 @@ case class Population(chromosomes: List[(Chromosome, Double)], graph: Graph) {
       }.sortBy(_._2)
 
     val bestCrossGenerations: List[(Chromosome, Double)] =
-      crossGenerations.take(populationSize - partition * 2)
+      crossGenerations.take(populationSize - (populationSize / 2))
 
-    val nextGeneration = bestCurrentGeneration ::: bestNewGeneration ::: bestCrossGenerations
+    val nextGeneration = bestCurrentGeneration ::: bestCrossGenerations
 
     Population(
       chromosomes = nextGeneration.sortBy(_._2),
