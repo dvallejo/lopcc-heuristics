@@ -20,6 +20,7 @@ case class BranchAndBoundAlgorithm(initBoundSelection: String)
     */
   def execute(graph: Graph): Solution = {
     val initBound = getInitBound(graph)
+    println("Calculated initial bound: " + initialBound)
     branchAndBound(graph, initBound)
   }
 
@@ -47,6 +48,7 @@ case class BranchAndBoundAlgorithm(initBoundSelection: String)
           if (nodeSol.isBetter(sol)) {
             sol = nodeSol
             upperBound = sol.totalCost
+            println("Found a better solution: " + sol.totalCost)
           }
         } else if (nodeBound <= upperBound)     
           feasibleChildren(nodeSol, nodeGraph)
