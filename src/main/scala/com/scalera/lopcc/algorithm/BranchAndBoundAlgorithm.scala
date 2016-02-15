@@ -20,7 +20,7 @@ case class BranchAndBoundAlgorithm(initBoundSelection: String)
     */
   def execute(graph: Graph): Solution = {
     val initBound = getInitBound(graph)
-    println("Calculated initial bound: " + initialBound)
+    println("Calculated initial bound: " + initBound)
     branchAndBound(graph, initBound)
   }
 
