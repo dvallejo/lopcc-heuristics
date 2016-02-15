@@ -4,11 +4,19 @@ import com.scalera.lopcc.problem.Solution
 import com.scalera.lopcc.util.Graph
 import com.scalera.lopcc.algorithm.Algorithm
 
+/**
+  * Genetic Algorithm
+  */
 object GeneticAlgorithm extends Algorithm {
 
   val populationSize = 1000
   val iterations = 100
 
+  /**
+    * Execute a genetic algorithm
+    * @param graph Graph
+    * @return the best solution obtained
+    */
   def execute(graph: Graph): Solution = {
     
     val population = Population.initial(populationSize, graph.maxNumNodes, graph)

@@ -2,10 +2,20 @@ package com.scalera.lopcc.algorithm.genetic
 
 import scala.util.Random
 
+/**
+  * Chromosome of a specific solution
+  * @param genes
+  */
 case class Chromosome(genes: List[Int])
 
 object Chromosome {
 
+  /**
+    * Cross two chromosomes in order to have a new one
+    * @param cBest the best chromosome of the two
+    * @param cWorst the worse chromosome of the two
+    * @return the new chromosome
+    */
   def cross(cBest: Chromosome, cWorst: Chromosome): Chromosome = {
 
     def insert(result: List[Int], element: Int): List[Int] =
@@ -27,6 +37,11 @@ object Chromosome {
     Chromosome(crossRecursive(List.empty[Int], true))
   }
 
+  /**
+    * Generate a random Chromosome with a random solution
+    * @param n size of the chromosome
+    * @return the new chromosome
+    */
   def generateRandom(n: Int): Chromosome =
     Chromosome(
       (0 to n-1).foldLeft((List.empty[Int], (0 to n-1).toList)) {
