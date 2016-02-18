@@ -88,7 +88,7 @@ case class Ant(alpha: Double = 0.5, beta: Double = 1.2) {
     val (items, weights) = options.unzip
     val intervals = items.zip(weights.scanLeft(0.0)(_ + _).tail)
     val maxProbability: Double = Random.nextDouble() * weights.sum
-    intervals.find{ case(_, weight) => weight >= maxProbability}.get._1
+    intervals.find{ case(_, weight) => weight >= maxProbability}.map(_._1).getOrElse(options.head._1)
   }
 
 }

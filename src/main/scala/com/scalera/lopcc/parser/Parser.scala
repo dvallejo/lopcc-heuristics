@@ -18,11 +18,14 @@ trait Parser {
 
     val graph = Graph.empty(lines.size)
 
-    lines.zipWithIndex
+    val graphWithEdges = lines.zipWithIndex
+      .tail
       .foldLeft(graph) {
         case (g, (line, i)) =>
           processLine(i, line, g)
       }
+
+    processNodeCost(graphWithEdges, lines.last)
   }
 
   /**
@@ -52,5 +55,13 @@ trait Parser {
         g.setEdge(i, j, cost.toDouble)
     }
   }
+
+  private def processNodeCost(graph: Graph, nodeCost: String) =
+    nodeCost.split("\\s+")
+      .zipWithIndex
+      .foldLeft(graph) {
+        case (g, (cost, i)) =>
+          g.setEdge(i, i, cost.toDouble)
+      }
       
 }
