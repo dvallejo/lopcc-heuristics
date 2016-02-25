@@ -37,6 +37,20 @@ object Chromosome {
     Chromosome(crossRecursive(List.empty[Int], true))
   }
 
+  def mutate(ch: Chromosome) = {
+    val posGen1 = Random.nextInt(ch.genes.size)
+    val gen1 = ch.genes(posGen1)
+    val posGen2 = Random.nextInt(ch.genes.size)
+    val gen2 = ch.genes(posGen2)
+
+    ch.copy(genes = ch.genes.zipWithIndex.map {
+      case (_, i) if i == posGen1 => gen2
+      case (_, i) if i == posGen2 => gen1
+      case (g, _) => g
+    })
+
+  }
+
   /**
     * Generate a random Chromosome with a random solution
     * @param n size of the chromosome

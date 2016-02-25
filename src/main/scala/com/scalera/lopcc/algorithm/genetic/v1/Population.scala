@@ -1,7 +1,8 @@
-package com.scalera.lopcc.algorithm.genetic
+package com.scalera.lopcc.algorithm.genetic.v1
 
 import com.scalera.lopcc.util.Graph
 import com.scalera.lopcc.problem.Solution
+import com.scalera.lopcc.algorithm.genetic.Chromosome
 
 /**
   * Population with several chromosomes

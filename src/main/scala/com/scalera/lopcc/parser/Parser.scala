@@ -16,10 +16,10 @@ trait Parser {
 
     val lines: List[String] = getFile(filePath).getLines().toList
 
-    val graph = Graph.empty(lines.size)
+    val graph = Graph.empty(lines.size - 1)
 
-    val graphWithEdges = lines.zipWithIndex
-      .tail
+    val graphWithEdges = lines.init
+      .zipWithIndex
       .foldLeft(graph) {
         case (g, (line, i)) =>
           processLine(i, line, g)
