@@ -121,4 +121,19 @@ abstract class Algorithm(initBoundSelection: String = "random") {
   def getRandomBound(graph: Graph): Double =
     getRandomSolution(graph).totalCost
 
+  def calculatePrunedNodes(solution: Solution): Int = {
+
+    var prunedNodes = 1
+    var aux = solution.getHoles
+    var nodesIteration = 1
+
+    for (hole <- (0 to solution.getHoles - 1)) {
+      nodesIteration = nodesIteration * aux
+      prunedNodes = prunedNodes + nodesIteration
+      aux = aux - 1
+    }
+
+    prunedNodes
+  }
+
 }

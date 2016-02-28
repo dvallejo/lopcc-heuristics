@@ -13,6 +13,8 @@ import scala.collection.mutable.PriorityQueue
 case class BranchAndBoundAlgorithm(initBoundSelection: String) 
   extends Algorithm(initBoundSelection) with Bounds with Children {
 
+  var prunedNodes: Int = 0
+
   /**
     * Execute a branch and bound algorithm
     * @param graph Graph
@@ -21,6 +23,7 @@ case class BranchAndBoundAlgorithm(initBoundSelection: String)
   def execute(graph: Graph): Solution = {
     val initBound = getInitBound(graph)
     println("Calculated initial bound: " + initBound)
+    prunedNodes = 0
     branchAndBound(graph, initBound)
   }
 
@@ -44,18 +47,28 @@ case class BranchAndBoundAlgorithm(initBoundSelection: String)
       queue.dequeue() match {
         case QueueNode(nodeGraph, nodeSol, nodeBound) =>
 
-        if (nodeSol.isComplete) {
-          if (nodeSol.isBetter(sol)) {
-            sol = nodeSol
-            upperBound = sol.totalCost
-            println("Found a better solution: " + sol.totalCost)
-          }
-        } else if (nodeBound <= upperBound)     
-          feasibleChildren(nodeSol, nodeGraph)
-            .filter(_.bound <= upperBound)
-            .foreach( children => queue.enqueue(children))
+          if (nodeSol.isComplete) {
+            if (nodeSol.isBetter(sol)) {
+              sol = nodeSol
+              upperBound = sol.totalCost
+              println("Found a better solution: " + sol.totalCost)
+            }
+          } else if (nodeBound <= upperBound) {
+            val children = feasibleChildren(nodeSol, nodeGraph)
+
+            val (pruned, feasible) = children.partition(_.bound >= upperBound)
+
+            pruned.foreach { node =>
+              prunedNodes = prunedNodes + calculatePrunedNodes(node.sol)
+            }
+
+            feasible.foreach( children => queue.enqueue(children))
+          } else
+            prunedNodes = prunedNodes + calculatePrunedNodes(nodeSol)
       }
     }
+
+    println("Num pruned nodes: " + prunedNodes)
 
     sol
 
