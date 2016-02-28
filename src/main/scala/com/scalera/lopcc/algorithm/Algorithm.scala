@@ -61,14 +61,14 @@ abstract class Algorithm(initBoundSelection: String = "random") {
     * @param graph Graph
     * @return the cost of the initial bound calculated
     */
-  def getInitBound(graph: Graph): Double =
+  def getInitBound(graph: Graph): Solution =
     initBoundSelection match {
-      case "random" => getRandomSolution(graph).totalCost
-      case "randomx100" => getRandomSolutionx100(graph).totalCost
-      case "ant" => getSolutionFromAnts(graph).totalCost
-      case "genetic" => getSolutionFromGA(graph).totalCost
-      case "greedy" => getGreedySolution(graph).totalCost
-      case _ => getRandomSolution(graph).totalCost
+      case "random" => getRandomSolution(graph)
+      case "randomx100" => getRandomSolutionx100(graph)
+      case "ant" => getSolutionFromAnts(graph)
+      case "genetic" => getSolutionFromGA(graph)
+      case "greedy" => getGreedySolution(graph)
+      case _ => getRandomSolution(graph)
     }
 
   /**

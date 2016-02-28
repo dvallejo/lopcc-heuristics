@@ -21,10 +21,10 @@ case class BranchAndBoundAlgorithm(initBoundSelection: String)
     * @return the best solution
     */
   def execute(graph: Graph): Solution = {
-    val initBound = getInitBound(graph)
-    println("Calculated initial bound: " + initBound)
+    val initSolution = getInitBound(graph)
+    println("Calculated initial bound: " + initSolution.totalCost)
     prunedNodes = 0
-    branchAndBound(graph, initBound)
+    branchAndBound(graph, initSolution)
   }
 
   /**
@@ -33,11 +33,11 @@ case class BranchAndBoundAlgorithm(initBoundSelection: String)
     * @param bound initial bound
     * @return the best solution
     */
-  def branchAndBound(graph: Graph, bound: Double): Solution = {
+  def branchAndBound(graph: Graph, initSolution: Solution): Solution = {
     
     var sol = Solution.empty(graph.maxNumNodes)
     val queue = PriorityQueue.empty[QueueNode]
-    var upperBound = bound
+    var upperBound = initSolution.totalCost
 
     val firstNode = QueueNode(graph, sol, getLB1(graph, sol))
     queue.enqueue(firstNode)
@@ -68,9 +68,12 @@ case class BranchAndBoundAlgorithm(initBoundSelection: String)
       }
     }
 
-    println("Num pruned nodes: " + prunedNodes)
-
-    sol
-
+    if (sol.nodes.isEmpty) {
+      println("All nodes pruned")
+      initSolution
+    } else {
+      println("Num pruned nodes: " + prunedNodes)
+      sol
+    }
   }
 }
