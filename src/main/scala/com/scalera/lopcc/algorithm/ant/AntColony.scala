@@ -13,7 +13,7 @@ import com.scalera.lopcc.util.Graph
 case class AntColony(
   ant: Ant,
   pheromoneConstant: Double = 1000.0,
-  evaporationRate: Double = 0.5,
+  evaporationRate: Double = 0.2,
   antsPerIteration: Int = 20
 ) {
 
@@ -29,11 +29,12 @@ case class AntColony(
     def recursiveSol(
       pheromoneGraph: Graph,
       bestSol: Solution,
-      iteration: Int
+      iteration: Int,
+      convergence: Boolean
     ): Solution =
-      if(iteration == iterations) {
+      if(convergence || iteration > iterations) {
         bestSol
-      }else {
+      } else {
         val newSolutions = goAntColony(graph, pheromoneGraph)
         
         var newPheromoneGraph = pheromoneGraph
@@ -41,27 +42,29 @@ case class AntColony(
 
         newSolutions.foreach { solution =>
           newPheromoneGraph = depositPheromones(solution, newPheromoneGraph)
-
-          if (solution.isBetter(newBestSol)) {
-            newPheromoneGraph = depositPheromones(solution, newPheromoneGraph)
+          if (solution.isBetter(newBestSol))
             newBestSol = solution
-          }
         }
 
         //The best one deposites twice
         newPheromoneGraph = depositPheromones(newBestSol, newPheromoneGraph)
-
         newPheromoneGraph = evaporatePheromones(newPheromoneGraph)
+
+        val newConvergence = newSolutions.map(_.totalCost).toSet.size <= antsPerIteration / 5
+
+        if (newConvergence)
+          println(s"Convergence reached in iteration $iteration")
 
         recursiveSol(
           newPheromoneGraph,
           newBestSol,
-          iteration + 1
+          iteration + 1,
+          newConvergence
         )
       }
     
     val initialPheromoneGraph = initializePheromones(graph)
-    recursiveSol(initialPheromoneGraph, initialSolution, 0)
+    recursiveSol(initialPheromoneGraph, initialSolution, 0, false)
     
   }
 
@@ -89,7 +92,7 @@ case class AntColony(
     * @return the graph generated
     */
   private def initializePheromones(graph: Graph): Graph =
-    Graph.initial(graph.maxNumNodes)
+    Graph.initial(graph.maxNumNodes, pheromoneConstant)
 
   /**
     * Evaporate pheromones according with the evaporation rate
@@ -113,12 +116,13 @@ case class AntColony(
     */
   private def depositPheromones(
     solution: Solution,
-    pheromoneGraph: Graph): Graph =
-    (0 to solution.maxNodes-2).foldRight(pheromoneGraph) { 
+    pheromoneGraph: Graph): Graph = {
+    val addition = (pheromoneConstant / solution.getCost) * 10000
+    (0 to solution.maxNodes-2).foldRight(pheromoneGraph) {
       case (level, g) =>
         val pheromone = g.getEdgeCost(solution.nodes(level), solution.nodes(level + 1))
-        val addition = pheromoneConstant / solution.getCost
         g.setEdge(solution.nodes(level), solution.nodes(level + 1), pheromone + addition)
     }
+  }
 
 }

@@ -10,11 +10,11 @@ import com.scalera.lopcc.algorithm.Algorithm
 object AntAlgorithm extends Algorithm() {
 
   val alpha = 0.5
-  val beta = 1.2
+  val beta = 0.5
 
   val pheromoneConstant = 1
   val evaporationRate = 0.3
-  val antsPerIteration = 40
+  val antsPerIteration = 100
   val iterations = 1000
 
   val colony =
