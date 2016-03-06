@@ -59,16 +59,16 @@ case class Ant(alpha: Double = 0.5, beta: Double = 1.2) {
     pheromoneGraph: Graph
   ): List[(Int, Double)] = {
     
-    val normalizationFactor = graph.nodes.map { node =>
+    val normalizationFactor = graph.nodes.filter(n => n != current).map { node =>
       val pheromone = pheromoneGraph.getEdgeCost(current, node)
-      val benefit = graph.getEdgeCost(current, node)
+      val benefit = graph.getPartialCost(current, node)
       Math.pow(pheromone, alpha) / Math.pow(benefit, beta)
     }.sum
 
-    graph.nodes
+    graph.nodes.filter(n => n != current)
       .map { node =>
         val pheromone = pheromoneGraph.getEdgeCost(current, node)
-        val benefit = graph.getEdgeCost(current, node)
+        val benefit = graph.getPartialCost(current, node)
         val a = Math.pow(pheromone, alpha)
         val b = 1.0 / Math.pow(benefit, beta)
         (node, (a * b) / normalizationFactor)
@@ -85,7 +85,7 @@ case class Ant(alpha: Double = 0.5, beta: Double = 1.2) {
   private def choiceWay(options: List[(Int, Double)]): Int = {
     val (items, weights) = options.unzip
     val intervals = items.zip(weights.scanLeft(0.0)(_ + _).tail)
-    val maxProbability: Double = 0.5 * Random.nextDouble() * weights.sum
+    val maxProbability: Double = Random.nextDouble() * weights.sum * 0.8
     intervals.find { case(_, weight) => 
       weight > maxProbability
     }

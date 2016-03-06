@@ -3,6 +3,8 @@ package com.scalera.lopcc.algorithm.ant
 import com.scalera.lopcc.problem.Solution
 import com.scalera.lopcc.util.Graph
 
+import scala.util.Random
+
 /**
   * Colony of ants
   * @param ant ant mode
@@ -14,7 +16,9 @@ case class AntColony(
   ant: Ant,
   pheromoneConstant: Double = 1000.0,
   evaporationRate: Double = 0.2,
-  antsPerIteration: Int = 20
+  antsPerIteration: Int = 20,
+  alpha: Double,
+  beta: Double
 ) {
 
   /**
@@ -32,34 +36,46 @@ case class AntColony(
       iteration: Int,
       convergence: Boolean
     ): Solution =
-      if(convergence || iteration > iterations) {
+      if(/*convergence || */iteration > iterations) {
         bestSol
       } else {
-        val newSolutions = goAntColony(graph, pheromoneGraph)
+        val newSolutions = goAntColony(graph, pheromoneGraph, iteration)
         
         var newPheromoneGraph = pheromoneGraph
         var newBestSol = bestSol
 
         newSolutions.foreach { solution =>
           newPheromoneGraph = depositPheromones(solution, newPheromoneGraph)
-          if (solution.isBetter(newBestSol))
+          if (solution.isBetter(newBestSol)) {
+            println("Nueva solución obtenida: " + solution.nodes)
             newBestSol = solution
+          }
         }
 
         //The best one deposites twice
         newPheromoneGraph = depositPheromones(newBestSol, newPheromoneGraph)
         newPheromoneGraph = evaporatePheromones(newPheromoneGraph)
 
-        val newConvergence = newSolutions.map(_.totalCost).toSet.size <= antsPerIteration / 5
+        // val newConvergence = 
+        //   newSolutions
+        //     .map(_.totalCost)
+        //     .toSet
+        //     .size <= antsPerIteration * 0.1
 
-        if (newConvergence)
-          println(s"Convergence reached in iteration $iteration")
+        // println(newSolutions
+        //   .map(_.totalCost)
+        //   .toSet
+        //   .size
+        // )
+
+        // if (newConvergence)
+        //   println(s"Convergence reached in iteration $iteration")
 
         recursiveSol(
           newPheromoneGraph,
           newBestSol,
           iteration + 1,
-          newConvergence
+          convergence //newConvergence
         )
       }
     
@@ -68,14 +84,44 @@ case class AntColony(
     
   }
 
+  private def getInitialNode(graph: Graph, pheromoneGraph: Graph, iteration: Int): Int = {
+    val normalizationFactor = graph.nodes.map { node =>
+      val pheromone = pheromoneGraph.getNodeCost(node)
+      val benefit = graph.getNodeCost(node)
+      Math.pow(pheromone, alpha) / Math.pow(benefit, beta)
+    }.sum
+
+    val options = graph.nodes
+      .map { node =>
+        val pheromone = pheromoneGraph.getNodeCost(node)
+        val benefit =  graph.getNodeCost(node)
+        val a = Math.pow(pheromone, alpha)
+        val b = 1.0 / Math.pow(benefit, beta)
+        (node, (a * b) / normalizationFactor)
+      }
+      .sortBy(_._2)
+      .reverse
+
+    val (items, weights) = options.unzip
+    val intervals = items.zip(weights.scanLeft(0.0)(_ + _).tail)
+    val maxProbability: Double = Random.nextDouble() * weights.sum
+    
+    intervals.find { case(_, weight) => 
+      weight > maxProbability
+    }
+    .headOption
+    .map(_._1)
+    .getOrElse(options.head._1)
+  }
+
   /**
     * Return the solution reached by an ant
     * @param graph Graph
     * @param pheromoneGraph graph with the pheromones
     * @return the solution found
     */
-  private def goAnt(graph: Graph, pheromoneGraph: Graph): Solution =
-    ant.goAnt(graph.randomNode, graph, pheromoneGraph)
+  private def goAnt(graph: Graph, pheromoneGraph: Graph, iteration: Int): Solution =
+    ant.goAnt(getInitialNode(graph, pheromoneGraph, iteration), graph, pheromoneGraph)
 
   /**
     * Generate a new solution for each ant
@@ -83,8 +129,8 @@ case class AntColony(
     * @param pheromoneGraph graph with the pheromones
     * @return the solution found
     */
-  private def goAntColony(graph: Graph, pheromoneGraph: Graph): List[Solution] =
-    (1 to antsPerIteration).toList.map(_ => goAnt(graph, pheromoneGraph))
+  private def goAntColony(graph: Graph, pheromoneGraph: Graph, iteration: Int): List[Solution] =
+    (1 to antsPerIteration).toList.map(_ => goAnt(graph, pheromoneGraph, iteration))
 
   /**
     * Generate an initial graph of pheromones
@@ -117,12 +163,16 @@ case class AntColony(
   private def depositPheromones(
     solution: Solution,
     pheromoneGraph: Graph): Graph = {
-    val addition = (pheromoneConstant / solution.getCost) * 10000
-    (0 to solution.maxNodes-2).foldRight(pheromoneGraph) {
+    val addition = (pheromoneConstant / solution.getCost)
+    val pheromoneNode = pheromoneGraph.getNodeCost(solution.nodes.last)
+    
+    val newPheromoneGraph = (0 to solution.maxNodes-2).foldRight(pheromoneGraph) {
       case (level, g) =>
-        val pheromone = g.getEdgeCost(solution.nodes(level), solution.nodes(level + 1))
-        g.setEdge(solution.nodes(level), solution.nodes(level + 1), pheromone + addition)
+        val pheromone = g.getEdgeCost(solution.nodes(level + 1), solution.nodes(level))
+        g.setEdge(solution.nodes(level + 1), solution.nodes(level), pheromone + addition)
     }
+
+    newPheromoneGraph.setEdge(solution.nodes.last, solution.nodes.last, pheromoneNode + addition)
   }
 
 }

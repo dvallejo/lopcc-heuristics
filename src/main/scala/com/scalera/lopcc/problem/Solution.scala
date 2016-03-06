@@ -79,7 +79,7 @@ case class Solution(
     * Remove the last node included in the solution
     * @return the new Solution and the node removed
     */
-  def removeLast: (Solution, Int) = (removeNode(nodes.last), nodes.last)
+  def removeLast: (Solution, Int) = (removeNode(nodes.head), nodes.head)
 
   def calculateAlpha(node: Int, graph: Graph): Solution =
     this.copy(

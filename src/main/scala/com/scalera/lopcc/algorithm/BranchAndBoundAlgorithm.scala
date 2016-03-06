@@ -69,7 +69,7 @@ case class BranchAndBoundAlgorithm(initBoundSelection: String)
     }
 
     if (sol.nodes.isEmpty) {
-      println("All nodes pruned")
+      println("All nodes pruned: " + calculatePrunedNodes(Solution.empty(graph.maxNumNodes)))
       initSolution
     } else {
       println("Num pruned nodes: " + prunedNodes)

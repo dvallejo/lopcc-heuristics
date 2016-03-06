@@ -14,15 +14,17 @@ object AntAlgorithm extends Algorithm() {
 
   val pheromoneConstant = 1
   val evaporationRate = 0.3
-  val antsPerIteration = 100
-  val iterations = 1000
+  val antsPerIteration = 50
+  val iterations = 10000
 
   val colony =
     AntColony(
       ant = Ant(alpha, beta),
       pheromoneConstant = pheromoneConstant,
       evaporationRate = evaporationRate,
-      antsPerIteration = antsPerIteration
+      antsPerIteration = antsPerIteration,
+      alpha,
+      beta
     )
 
   /**
