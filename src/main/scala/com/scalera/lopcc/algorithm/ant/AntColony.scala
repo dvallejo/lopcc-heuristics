@@ -36,7 +36,7 @@ case class AntColony(
       iteration: Int,
       convergence: Boolean
     ): Solution =
-      if(/*convergence || */iteration > iterations) {
+      if(iteration > iterations) {
         bestSol
       } else {
         val newSolutions = goAntColony(graph, pheromoneGraph, iteration)
@@ -56,26 +56,11 @@ case class AntColony(
         newPheromoneGraph = depositPheromones(newBestSol, newPheromoneGraph)
         newPheromoneGraph = evaporatePheromones(newPheromoneGraph)
 
-        // val newConvergence = 
-        //   newSolutions
-        //     .map(_.totalCost)
-        //     .toSet
-        //     .size <= antsPerIteration * 0.1
-
-        // println(newSolutions
-        //   .map(_.totalCost)
-        //   .toSet
-        //   .size
-        // )
-
-        // if (newConvergence)
-        //   println(s"Convergence reached in iteration $iteration")
-
         recursiveSol(
           newPheromoneGraph,
           newBestSol,
           iteration + 1,
-          convergence //newConvergence
+          convergence
         )
       }
     
