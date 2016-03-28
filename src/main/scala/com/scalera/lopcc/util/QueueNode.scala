@@ -15,5 +15,5 @@ case class QueueNode(
 ) extends Ordered[QueueNode] {
 
   override def compare(that: QueueNode) =
-    bound compare that.bound
+    (bound / sol.getHoles) compare (that.bound / that.sol.getHoles)
 }
