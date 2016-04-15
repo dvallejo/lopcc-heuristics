@@ -1,9 +1,7 @@
 package com.scalera.lopcc.algorithm
 
-import com.scalera.lopcc.util.{ Graph, Children, QueueNode }
+import com.scalera.lopcc.util.{ Graph, Children, QueueNode, BoundedPriorityQueue }
 import com.scalera.lopcc.problem.{ Solution, Bounds }
-
-import scala.collection.mutable.PriorityQueue
 
 /**
   * Branch and bound algorithm
@@ -36,7 +34,7 @@ case class BranchAndBoundAlgorithm(initBoundSelection: String)
   def branchAndBound(graph: Graph, initSolution: Solution): Solution = {
     
     var sol = Solution.empty(graph.maxNumNodes)
-    val queue = PriorityQueue.empty[QueueNode]
+    val queue = BoundedPriorityQueue[QueueNode](1000000000)
     var upperBound = initSolution.totalCost
 
     val firstNode = QueueNode(graph, sol, getLB1(graph, sol))
